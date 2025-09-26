@@ -351,8 +351,61 @@ footer {
     .contact-info {
         grid-template-columns: 1fr;
     }
-    
+
+
+    /* Add responsive styles for mobile devices */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1.2rem 0 1rem 0;
+    }
+    .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 10px;
+    }
+    .logo h1 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .nav-menu {
+        flex-direction: column;
+        width: 100%;
+        padding: 0;
+    }
+    .nav-menu li {
+        margin: 0.8rem 0;
+    }
+    .hero {
+        flex-direction: column;
+        padding: 60px 10px 30px;
+        min-height: auto;
+        text-align: center;
+    }
+    .hero-content {
+        padding-right: 0;
+        margin-bottom: 1.5rem;
+    }
     .hero-content h1 {
         font-size: 2rem;
     }
+    .hero-image img {
+        max-width: 90vw;
+        margin: 0 auto;
+    }
+    .demo-image img {
+        max-width: 90vw;
+        margin: 0 auto;
+    }
+    .problem-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
 }
