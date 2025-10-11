@@ -1,0 +1,220 @@
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f5f8fb;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background: #0044cc;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+header h1 {
+  font-size: 1.8em;
+}
+
+header p {
+  font-size: 1em;
+  opacity: 0.9;
+}
+
+/* Stats Section */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 15px;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  flex: 1 1 200px;
+  max-width: 200px;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+  color: #0044cc;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/* Appointment Table */
+.appointments {
+  flex: 1;
+  padding: 20px;
+}
+
+.appointments h2 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #0044cc;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+th, td {
+  text-align: center;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #0044cc;
+  color: white;
+  font-weight: 500;
+}
+
+tr:hover {
+  background: #f0f4ff;
+}
+
+.loading {
+  color: #777;
+}
+
+/* Buttons */
+button {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+button.update {
+  background: #007bff;
+  color: white;
+}
+
+button.cancel {
+  background: #dc3545;
+  color: white;
+}
+
+button.update:hover {
+  background: #0056b3;
+}
+
+button.cancel:hover {
+  background: #b02a37;
+}
+
+/* Footer */
+footer {
+  background: #f1f3f6;
+  text-align: center;
+  padding: 10px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+/* Mobile Responsive */
+@media (max-width: 700px) {
+  .stats {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  th, td {
+    font-size: 0.9em;
+  }
+}
+
+
+/* Toast notification for updates */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 20px;
+  background: #0044cc;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Queue Overview Widget */
+.queue-overview {
+  margin: 10px 20px 30px 20px;
+  text-align: center;
+}
+
+.queue-overview h2 {
+  color: #0044cc;
+  margin-bottom: 10px;
+}
+
+.queue-card {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.queue-card div {
+  flex: 1 1 200px;
+  margin: 10px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #f7f9fc;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.queue-card h3 {
+  color: #0044cc;
+  margin-bottom: 8px;
+}
+
+.queue-card p {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #222;
+}
+
+@media (max-width: 600px) {
+  .queue-card {
+    flex-direction: column;
+  }
+}
