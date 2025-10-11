@@ -25,20 +25,18 @@ function scrollToSection(sectionId) {
 
 // Demo functionality
 function openDemo() {
-    alert('Interactive demo would launch here! This would show the full clinic dashboard and booking system.');
-}
-
-// Navbar background change on scroll
-window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(44, 62, 80, 0.95)';
-        navbar.style.backdropFilter = 'blur(10px)';
-    } else {
-        navbar.style.background = '#2c3e50';
-        navbar.style.backdropFilter = 'none';
+    // Navigate to the clinic dashboard page located in the frontend folder.
+    const targetPath = 'frontend/clinicDashboard.html';
+    try {
+        // Try to navigate in the same tab first
+        window.location.href = targetPath;
+        console.info('Navigating to ' + targetPath);
+    } catch (e) {
+        // If navigation is blocked for any reason, open in a new tab as a fallback
+        console.warn('Navigation failed, opening demo in a new tab.', e);
+        window.open(targetPath, '_blank', 'noopener');
     }
-});
+}
 
 // Simple animation on scroll
 const observerOptions = {
