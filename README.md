@@ -72,8 +72,8 @@ Originally developed during the **IBM Z Datathon**, Smart Health System has evol
 
 ## 👥 Team
 
-| Name | Role | Institution |
-|------|------|--------------|
+| Name |Institution |
+|------|--------------|
 | **Mojalefa Mokgadi** | Vaal University of Technology |
 | **Mveledzo Mbubana** |  Vaal University of Technology |
 | **Kgotso Tabodi** |  Vaal University of Technology |
