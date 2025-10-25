@@ -1,54 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SmartHealthSystem – Patient Portal</title>
-  <link rel="stylesheet" href="patient.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJdZ6gA9Qn+sF/Q5Xh5+XlD3Fh9Kj+gT9T5aD6zQzE5V/zQx5v4/jFzQ7Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="../assets/css/patient.css" />
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <h1>SmartHealthSystem</h1>
-    <p>Smarter, Faster, and Easier Clinic Appointments</p>
-  </header>
+    <div id="loading-spinner" class="spinner-overlay hidden">
+    <div class="spinner"></div>
+    <p>Processing request...</p>
+  </div>
 
-  <!-- Tab Navigation -->
-  <nav class="tab-nav">
-    <button class="tab-btn active" data-tab="homeTab">🏠 Home</button>
-    <button class="tab-btn" data-tab="bookTab">📅 Book Appointment</button>
-    <button class="tab-btn" data-tab="bookingsTab">📊 My Bookings</button>
-    <button class="tab-btn" data-tab="notificationsTab">🔔 Notifications</button>
-  </nav>
+    <header>
+    <h1>SmartHealthSystem</h1>
+    <p>Smarter, Faster, and Easier Clinic Appointments</p>
+  </header>
 
-  <!-- Main Tabs -->
-  <main>
+    <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="homeTab"><i class="fas fa-home"></i> Home</button>
+    <button class="tab-btn" data-tab="bookTab"><i class="fas fa-calendar-plus"></i> Book</button>
+    <button class="tab-btn" data-tab="bookingsTab"><i class="fas fa-list-alt"></i> My Bookings</button>
+    <button class="tab-btn" data-tab="notificationsTab"><i class="fas fa-bell"></i> Alerts</button>
+  </nav>
 
-    <!-- Home -->
-    <section id="homeTab" class="tab active">
-      <h2>Welcome!</h2>
-      <p>
-        Manage your clinic appointments effortlessly.  
-        Book new visits, check existing appointments, and get notified in real-time when an earlier slot becomes available.
-      </p>
-      <div class="quick-actions">
-        <button class="quick-btn" data-tab="bookTab">Book Appointment</button>
-        <button class="quick-btn" data-tab="bookingsTab">View My Bookings</button>
-      </div>
-    </section>
+    <main>
 
-    <!-- Book Appointment -->
-    <section id="bookTab" class="tab">
-      <h2>Book Appointment</h2>
-      <form id="bookingForm">
-        <label>Full Name</label>
-        <input id="name" type="text" required placeholder="e.g. Lerato Mokoena" />
+        <section id="homeTab" class="tab active">
+      <h2>Welcome!</h2>
+      <p>
+        Manage your clinic appointments effortlessly.  
+        Book new visits, check existing appointments, and get notified in real-time when an earlier slot becomes available.
+      </p>
+      <div class="quick-actions">
+        <button class="quick-btn" data-tab="bookTab">Book Appointment</button>
+        <button class="quick-btn" data-tab="bookingsTab">View My Bookings</button>
+      </div>
+    </section>
 
-        <label>Phone Number</label>
-        <input id="phone" type="tel" required placeholder="07XXXXXXXX" pattern="[0-9]{9,12}" />
+        <section id="bookTab" class="tab">
+      <h2>Book Appointment</h2>
 
-        <label>Clinic</label>
+            <div id="suggestedSlotArea" class="hidden">
+          <h3>Suggested Slot Found:</h3>
+          <p>
+              Clinic: <strong id="suggestedClinicDisplay"></strong><br>
+              Date: <strong id="suggestedDateDisplay"></strong><br>
+              Time: <strong id="suggestedTimeDisplay"></strong>
+          </p>
+          <div class="slot-actions">
+              <button type="button" id="acceptSlotBtn" class="action-btn accept">Accept & Book</button>
+              <button type="button" id="denySlotBtn" class="action-btn deny">Deny & See Alternatives</button>
+          </div>
+          <hr>
+      </div>
+
+            <form id="bookingForm">
+        <label>Full Name</label>
+        <input id="name" type="text" required placeholder="e.g. Lerato Mokoena" />
+
+        <label>Phone Number</label>
+        <input id="phone" type="tel" required placeholder="07XXXXXXXX" pattern="[0-9]{9,12}" />
+
+        <label>Clinic</label>
         <select id="clinic" required>
           <option value="">-- Select Clinic --</option>
           <option value="Tembisa Clinic">Tembisa Clinic</option>
@@ -57,52 +73,55 @@
         </select>
 
         <label>Date</label>
-        <input id="date" type="date" required />
+                <input id="date" type="date" required min="2025-10-25" /> 
+        
+                <!-- Time slot selection (hidden by default as we use the suggestion system) -->
+                <div id="timeSlotSelection" class="hidden">
+                    <label>Preferred Time (Optional)</label>
+                    <select id="slot">
+                        <option value="">-- Select Preferred Time --</option>
+                        <option value="08:00">08:00 AM</option>
+                        <option value="08:30">08:30 AM</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="09:30">09:30 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                    </select>
+                    <small class="hint">*We'll try to accommodate your preferred time or suggest the closest available slot</small>
+                </div>
+        
+                <label>Reason (Optional)</label>
+        <textarea id="reason" placeholder="Describe your reason for visit"></textarea>        <label><input id="standby" type="checkbox" /> Opt into standby (earlier slot if available)</label>
+        <label><input id="grace" type="checkbox" /> Allow 15-min grace if late</label>
 
-        <label>Time Slot</label>
-        <select id="slot" required>
-          <option value="">-- Select Time --</option>
-          <option>08:00</option>
-          <option>08:30</option>
-          <option>09:00</option>
-          <option>09:30</option>
-          <option>10:00</option>
-          <option>10:30</option>
-        </select>
+                <button type="submit" id="findSlotBtn">Find Available Time Slot</button>
+      </form>
+    </section>
 
-        <label>Reason (Optional)</label>
-        <textarea id="reason" placeholder="Describe your reason for visit"></textarea>
+        <section id="bookingsTab" class="tab">
+      <h2>My Bookings</h2>
+      <div class="status-controls">
+        <input id="statusPhone" type="tel" placeholder="Enter phone to check..." />
+        <button id="viewStatusBtn">Check</button>
+      </div>
+      <div id="statusResults" class="results"></div>
+    </section>
 
-        <label><input id="standby" type="checkbox" /> Opt into standby (earlier slot if available)</label>
-        <label><input id="grace" type="checkbox" /> Allow 15-min grace if late</label>
+        <section id="notificationsTab" class="tab">
+      <h2>Notifications</h2>
+      <div id="notificationsList"></div>
+      <button id="refreshNotifs">🔄 Refresh Notifications</button>
+    </section>
 
-        <button type="submit">Book Appointment</button>
-      </form>
-    </section>
-
-    <!-- My Bookings -->
-    <section id="bookingsTab" class="tab">
-      <h2>My Bookings</h2>
-      <div class="status-controls">
-        <input id="statusPhone" type="tel" placeholder="Enter phone to check..." />
-        <button id="viewStatusBtn">Check</button>
-      </div>
-      <div id="statusResults" class="results"></div>
-    </section>
-
-    <!-- Notifications -->
-    <section id="notificationsTab" class="tab">
-      <h2>Notifications</h2>
-      <div id="notificationsList"></div>
-      <button id="refreshNotifs">🔄 Refresh Notifications</button>
-    </section>
-
-  </main>
+  </main>
 
   <footer>
     <p>&copy; 2025 SmartHealthSystem | Patient Portal</p>
   </footer>
 
-  <script src="patient.js"></script>
+  <script src="../assets/js/patient.js"></script>
 </body>
 </html>
