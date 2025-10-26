@@ -1,171 +1,210 @@
-// Mock data - no API needed!
-let mockBookings = JSON.parse(localStorage.getItem('smartHealthBookings')) || [
-  {
-    id: 1,
-    name: "Lerato Mokoena",
-    phone: "0712345678", 
-    clinic: "Tembisa Clinic",
-    date: "2025-10-12",
-    slot: "09:00",
-    status: "booked",
-    reason: "Regular checkup"
-  },
-  {
-    id: 2, 
-    name: "John Smith",
-    phone: "0723456789",
-    clinic: "Vaal Clinic", 
-    date: "2025-10-12",
-    slot: "09:30",
-    status: "checked_in",
-    reason: "Follow-up visit"
-  },
-  {
-    id: 3,
-    name: "Sarah Johnson",
-    phone: "0734567890",
-    clinic: "Soweto Clinic",
-    date: "2025-10-12", 
-    slot: "10:00",
-    status: "booked",
-    reason: "Vaccination"
-  }
-];
 
-let autoRefreshInterval;
+// --- Globals ---
+const resultsTableBody = document.getElementById("resultsTableBody");
+const nextPatientCard = document.getElementById("nextPatientCard");
+const patientCountDisplay = document.getElementById("patientCount");
+const currentQueueDisplay = document.getElementById("currentQueue");
+const currentWaitTimeDisplay = document.getElementById("currentWaitTime");
 
-// Save to localStorage
-function saveBookings() {
-  localStorage.setItem('smartHealthBookings', JSON.stringify(mockBookings));
-}
+// Stats Elements
+const totalAppointmentsDisplay = document.getElementById("totalAppointments");
+const checkedInCountDisplay = document.getElementById("checkedInCount");
+const pendingCountDisplay = document.getElementById("pendingCount");
+const cancelledCountDisplay = document.getElementById("cancelledCount");
 
-// Load and display appointments
-function loadAppointments(showLoading = true) {
-  const table = document.getElementById("appointmentsTable");
-  
-  if (mockBookings.length === 0) {
-    table.innerHTML = `<tr><td colspan="6">No appointments found</td></tr>`;
-    resetStats();
-    updateQueueOverview(null);
-    return;
-  }
+// NEW: Clinic Selection and Authentication
+const clinicSelector = document.getElementById("clinicSelector");
+const dashboardHeader = document.getElementById("dashboardHeader");
+let currentClinic = clinicSelector.value; // Initialize with the selected value
 
-  // Sort by slot time
-  mockBookings.sort((a, b) => (a.slot > b.slot ? 1 : -1));
-
-  let total = 0, checkedIn = 0, cancelled = 0, pending = 0;
-  let nextPatient = null;
-
-  table.innerHTML = "";
-
-  mockBookings.forEach(booking => {
-    total++;
-    if (booking.status === "booked") {
-      pending++;
-      if (!nextPatient) nextPatient = { name: booking.name, slot: booking.slot };
-    }
-    if (booking.status === "checked_in") checkedIn++;
-    if (booking.status === "cancelled") cancelled++;
-
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${booking.id}</td>
-      <td>${booking.name}</td>
-      <td>${booking.phone}</td>
-      <td>${booking.slot}</td>
-      <td><span class="status ${booking.status}">${booking.status.replace("_", " ")}</span></td>
-      <td>
-        ${booking.status === "booked"
-          ? `<button class="update" onclick="updateStatus(${booking.id}, 'checked_in')">Check-In</button>
-             <button class="cancel" onclick="updateStatus(${booking.id}, 'cancelled')">Cancel</button>`
-          : `<button disabled class="done">Done</button>`
-        }
-      </td>
-    `;
-    table.appendChild(tr);
-  });
-
-  updateStats(total, checkedIn, pending, cancelled);
-  updateQueueOverview(nextPatient);
-}
-
-// Update appointment status
-function updateStatus(id, status) {
-  const confirmAction = confirm(`Are you sure you want to mark appointment #${id} as ${status}?`);
-  if (!confirmAction) return;
-
-  const booking = mockBookings.find(b => b.id === id);
-  if (booking) {
-    booking.status = status;
-    saveBookings();
-    showToast(`Status updated to ${status}`);
-    loadAppointments(false);
-  }
-}
-
-// Stats handling
-function updateStats(total, checkedIn, pending, cancelled) {
-  document.getElementById("totalAppointments").innerText = total;
-  document.getElementById("checkedIn").innerText = checkedIn;
-  document.getElementById("pending").innerText = pending;
-  document.getElementById("cancelled").innerText = cancelled;
-}
-
-function resetStats() {
-  updateStats(0, 0, 0, 0);
-}
-
-// Real-time refresh every 10 seconds
-function startAutoRefresh() {
-  stopAutoRefresh();
-  autoRefreshInterval = setInterval(() => loadAppointments(false), 10000);
-}
-
-function stopAutoRefresh() {
-  if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-}
-
-// Toast notifications
-function showToast(message) {
-  const toast = document.createElement("div");
-  toast.className = "toast";
-  toast.innerText = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add("show"), 100);
-  setTimeout(() => toast.classList.remove("show"), 3000);
-  setTimeout(() => toast.remove(), 3500);
-}
-
-// Update queue overview
-function updateQueueOverview(nextPatient) {
-  const nameEl = document.getElementById("nextPatient");
-  const timeEl = document.getElementById("waitTime");
-
-  if (!nextPatient) {
-    nameEl.textContent = "No patients in queue";
-    timeEl.textContent = "-";
-    return;
-  }
-
-  nameEl.textContent = `${nextPatient.name} (${nextPatient.slot})`;
-  
-  // Simple waiting time calculation
-  const now = new Date();
-  const [hour, minute] = nextPatient.slot.split(":").map(v => parseInt(v));
-  const slotTime = new Date();
-  slotTime.setHours(hour);
-  slotTime.setMinutes(minute);
-  
-  let diffMinutes = Math.max((slotTime - now) / 60000, 0);
-  let displayTime = diffMinutes < 1 ? "Now" : `${Math.round(diffMinutes)} min`;
-  
-  timeEl.textContent = displayTime;
-}
-
-// Initialize on page load
-window.addEventListener("DOMContentLoaded", () => {
-  loadAppointments();
-  startAutoRefresh();
-  showToast("Clinic Dashboard Loaded");
+// Add clinic selection event listener
+clinicSelector.addEventListener('change', function() {
+    currentClinic = this.value;
+    dashboardHeader.textContent = currentClinic + " Dashboard";
+    renderDashboard();
 });
+
+// --- Data Fetching and Management ---
+
+// This pulls the central booking data shared with the patient app
+let mockBookings = JSON.parse(localStorage.getItem('smartHealthBookings')) || [];
+
+function saveBookings() {
+    localStorage.setItem('smartHealthBookings', JSON.stringify(mockBookings));
+    // Re-render immediately after a change
+    renderDashboard();
+}
+
+function findBookingById(id) {
+    return mockBookings.find(b => b.id === id);
+}
+
+// --- Status Management Logic ---
+
+// Function to update the status of a patient by ID
+function updateStatus(id, newStatus) {
+    const booking = findBookingById(id);
+    if (!booking) return;
+
+    // 1. Update the booking status
+    booking.status = newStatus;
+
+    // 2. Perform actions based on new status
+    if (newStatus === 'cancelled') {
+        // If a patient cancels, check for a standby patient to fill the slot
+        checkAndNotifyStandby(booking.clinic, booking.date, booking.slot);
+    } else if (newStatus === 'completed') {
+        // Remove completed appointment from the active list
+        mockBookings = mockBookings.filter(b => b.id !== id);
+    }
+
+    saveBookings();
+}
+
+
+// --- Standby/Queue Logic (Simplified for this task) ---
+
+// Placeholder function - a real system would handle this complex logic
+function checkAndNotifyStandby(clinic, date, cancelledSlot) {
+    // 1. Find a standby patient for this clinic and date
+    const standbyPatient = mockBookings.find(b => 
+        b.clinic === clinic && 
+        b.date === date && 
+        b.standby &&
+        b.status === 'booked' // only consider active, booked appointments
+    );
+
+    if (standbyPatient) {
+        // 2. If found, give them the cancelled slot
+        standbyPatient.slot = cancelledSlot;
+        standbyPatient.standby = false; // Standby fulfilled
+
+        // 3. Notify the patient (simulate a notification)
+        console.log(`[NOTIFICATION SENT] ${standbyPatient.name} has been moved to an earlier slot: ${cancelledSlot}`);
+        // In a real system, this would push a notification to the patient's local storage/app.
+    }
+}
+
+
+// --- Dashboard Rendering (UPDATED) ---
+
+function renderDashboard() {
+    // Filter bookings for current clinic
+    const clinicBookings = mockBookings.filter(b => b.clinic === currentClinic);
+    
+    // Active bookings (not completed/cancelled)
+    const activeBookings = clinicBookings
+        .filter(b => b.status !== 'completed' && b.status !== 'cancelled')
+        .sort((a, b) => new Date(a.date + ' ' + a.slot) - new Date(b.date + ' ' + b.slot));
+
+    // Clear previous content
+    resultsTableBody.innerHTML = '';
+    nextPatientCard.innerHTML = '<h2>No Patients in Queue</h2><p>Select a clinic or wait for a patient to check in.</p>';
+    
+    // Calculate metrics
+    const checkedInCount = clinicBookings.filter(b => b.status === 'checked_in').length;
+    const pendingCount = clinicBookings.filter(b => b.status === 'booked').length;
+    const cancelledCount = clinicBookings.filter(b => b.status === 'cancelled').length;
+    const inQueueCount = activeBookings.filter(b => b.status === 'checked_in' || b.status === 'in_consult').length;
+    
+    // Update stats cards
+    totalAppointmentsDisplay.textContent = clinicBookings.length;
+    checkedInCountDisplay.textContent = checkedInCount;
+    pendingCountDisplay.textContent = pendingCount;
+    cancelledCountDisplay.textContent = cancelledCount;
+    
+    // Update queue metrics
+    patientCountDisplay.textContent = activeBookings.length;
+    currentQueueDisplay.textContent = `Queue: ${inQueueCount}`;
+    const estimatedMinutes = inQueueCount * 15; // 15 minutes per patient
+    currentWaitTimeDisplay.textContent = `Wait: ~${estimatedMinutes} min`;
+
+    if (activeBookings.length === 0) {
+        return; 
+    }
+
+    // --- 1. Next Patient Card (First in the sorted list) ---
+    const nextPatient = activeBookings[0];
+    
+    // Determine the main action based on patient status
+    let actionButtonHTML = '';
+    if (nextPatient.status === 'booked') {
+        actionButtonHTML = `<button onclick="updateStatus(${nextPatient.id}, 'checked_in')" class="action-btn primary">Check In</button>`;
+    } else if (nextPatient.status === 'checked_in' || nextPatient.status === 'in_consult') {
+        actionButtonHTML = `
+            <button onclick="updateStatus(${nextPatient.id}, 'in_consult')" class="action-btn tertiary">Start Consult</button>
+            <button onclick="updateStatus(${nextPatient.id}, 'completed')" class="action-btn success">Mark Complete</button>
+        `;
+    }
+    
+    nextPatientCard.innerHTML = `
+        <h2>NEXT: ${nextPatient.name}</h2>
+        <p>Time: <strong>${nextPatient.slot}</strong> | Status: <strong>${nextPatient.status.toUpperCase().replace('_', ' ')}</strong></p>
+        <p>Reason: ${nextPatient.reason || 'N/A'}</p>
+        <div class="card-actions">${actionButtonHTML}</div>
+    `;
+
+
+    // --- 2. Full Appointments Table ---
+    activeBookings.forEach((booking, index) => {
+        
+        let statusBadgeClass = '';
+        if (booking.status === 'booked') {
+            statusBadgeClass = 'waiting'; 
+        } else if (booking.status === 'checked_in') {
+            statusBadgeClass = 'checked-in';
+        } else if (booking.status === 'in_consult') {
+            statusBadgeClass = 'in-consult';
+        }
+        
+        const row = resultsTableBody.insertRow();
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${booking.name}</td>
+            <td>${booking.phone}</td>
+            <td>${booking.date}</td>
+            <td>${booking.slot}</td>
+            <td><span class="status-badge ${statusBadgeClass}">${booking.status.toUpperCase().replace('_', ' ')}</span></td>
+            <td>${booking.standby ? 'Yes' : 'No'}</td>
+            <td>
+                <select onchange="updateStatus(${booking.id}, this.value)">
+                    <option value="${booking.status}">${booking.status.toUpperCase().replace('_', ' ')} (Current)</option>
+                    <option value="checked_in">Check In</option>
+                    <option value="in_consult">In Consult</option>
+                    <option value="completed">Complete</option>
+                    <option value="cancelled">Cancel</option>
+                </select>
+            </td>
+        `;
+    });
+}
+
+// --- Event Listeners and Initialization ---
+
+// NEW: Handle clinic selection change
+clinicSelector.addEventListener('change', (e) => {
+    currentClinic = e.target.value;
+    dashboardHeader.textContent = `${currentClinic} Dashboard`;
+    renderDashboard();
+});
+
+// Initial Render
+renderDashboard();
+
+
+
+// --- Initialization and Polling (New Block) ---
+
+// Function to start the dashboard rendering loop
+function startPolling() {
+    // Render the dashboard immediately on load
+    renderDashboard();
+    
+    // Set up a timer to refresh the dashboard every 5 seconds (5000 milliseconds)
+    // This solves Issue #1 for the demo by simulating real-time updates.
+    setInterval(renderDashboard, 5000); 
+}
+
+// Ensure you replace or delete the old 'renderDashboard();' call 
+// if it was at the bottom of your file, and replace it with this:
+startPolling();

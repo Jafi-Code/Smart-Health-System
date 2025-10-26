@@ -24,21 +24,6 @@ function scrollToSection(sectionId) {
 }
 
 
-// Demo functionality
-function openDemo() {
-    // Navigate to the clinic dashboard page located in the frontend folder.
-    const targetPath = 'frontend/clinicDashboard.html';
-    try {
-        // Try to navigate in the same tab first
-        window.location.href = targetPath;
-        console.info('Navigating to ' + targetPath);
-    } catch (e) {
-        // If navigation is blocked for any reason, open in a new tab as a fallback
-        console.warn('Navigation failed, opening demo in a new tab.', e);
-        window.open(targetPath, '_blank', 'noopener');
-    }
-}
-
 // Navbar background change on scroll
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');

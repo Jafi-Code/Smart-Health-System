@@ -1,4 +1,4 @@
-/* /assets/css/main-patient.css */
+/* /assets/css/patient.css */
 
 /* ------------------------------------ */
 /* 1. CSS VARIABLES (ORIGINAL BLUE THEME) */
@@ -310,4 +310,362 @@ footer {
         box-shadow: none;
         padding: 15px;
     }
+}
+
+/* /assets/css/main-patient.css */
+
+/* --- NEW: Auth Screen Styles --- */
+.auth-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-form h3 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.auth-form hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 10px 0;
+}
+
+#toggleAuth a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Update Header for Logout Link */
+header p a {
+    color: white;
+    font-weight: bold;
+}
+
+/* /assets/css/main-patient.css */
+
+:root {
+    --primary-color: #2563eb; 
+    --secondary-color: #64748b;
+    --success-color: #16a34a;
+    --warning-color: #d97706;
+    --error-color: #dc2626;
+    --white: #ffffff;
+    --light-grey: #f4f4f9;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light-grey);
+    color: #333;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+header p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+header p a {
+    color: white;
+    font-weight: bold;
+}
+
+/* --- Navigation --- */
+.tab-nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--white);
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+    transition: color 0.3s, border-bottom 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.tab-btn i {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+main {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.tab {
+    display: none;
+}
+
+.tab.active {
+    display: block;
+}
+
+/* --- Forms and Inputs --- */
+form {
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-weight: bold;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"], #findSlotBtn {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+button[type="submit"]:hover, #findSlotBtn:hover {
+    background-color: #1e40af;
+}
+
+/* --- Status and Results --- */
+.booking-card {
+    background-color: var(--white);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid var(--primary-color);
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.booking-card strong {
+    color: var(--primary-color);
+}
+
+.booking-card button {
+    background-color: var(--error-color);
+    color: var(--white);
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+.status-badge.checked-in { background: #4CAF50; } /* Success Green */
+.status-badge.waiting { background: #FF9800; } /* Warning Orange */
+.status-badge.in-consult { background: #2196F3; } /* Primary Blue */
+.status-badge.unstamp { background: #F44336; } /* Error Red */
+
+
+/* --- Suggested Slot Area --- */
+#suggestedSlotArea {
+    background-color: #e6f7ff;
+    border: 1px solid #91d5ff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#suggestedSlotArea h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.slot-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.slot-actions .accept {
+    background-color: var(--success-color);
+    color: var(--white);
+}
+
+.slot-actions .deny {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+
+/* --- Auth Screen Styles --- */
+.auth-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 0; /* Remove padding from form inside container */
+    box-shadow: none; /* Remove shadow from form inside container */
+}
+
+.auth-form h3 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.auth-form hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 10px 0;
+}
+
+#toggleAuth a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* --- Queue Tab Styles --- */
+#queueStatusDisplay {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+#queueStatusDisplay h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+#queueStatusDisplay p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+#queueStatusDisplay strong {
+    color: var(--primary-color);
+}
+
+/* --- Spinner --- */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid var(--white);
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinner-overlay p {
+    color: white;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none !important;
 }
