@@ -1,40 +1,57 @@
-Smart Health System — Technical Documentation
-Overview
-Smart Health System is a browser-based healthcare management platform built using front-end web technologies.
-It digitizes the appointment booking and queue management process for public clinics — ensuring efficiency, transparency, and accessibility.
-This MVP (Minimum Viable Product) runs entirely in the browser using localStorage for data persistence and JavaScript polling to simulate real-time queue updates.
-Note: we couldn’t figure out how to set up the backend, this is not an excuse but we are second year students and we haven’t even discussed APIs yet at our university, we hope you give us a chance and regard our submission and see the vision of our solution  
-________________________________________
-Technology Stack
-Component	Technology	Description
-Frontend Structure	HTML5	Provides the core structure and content of the web application.
-Styling	CSS3	Ensures a clean, responsive, and mobile-friendly user interface.
-Logic & Interactivity	Pure JavaScript (ES6)	Handles data processing, dynamic UI updates, and application flow.
-Data Storage	localStorage API	Stores appointments, user details, and queue states persistently in the browser.
-Simulation of Real-time Updates	JavaScript Polling + localStorage Sync	Mimics backend-driven updates by refreshing queue data at set intervals.
-Offline-first Design:
-Because it uses localStorage and client-side logic, the application works fully offline, simulating how the actual Smart Health System would function in low-connectivity areas.
-________________________________________
+#  Smart Health System — Technical Documentation
 
+---
 
-Data Model (localStorage Structure)
-All patient and clinic data is stored in the browser’s localStorage as JSON strings.
-The following objects define the current data schema:
+##  Overview
 
- Appointment Object
+**Smart Health System** is a browser-based healthcare management platform built using front-end web technologies.  
+It digitizes the **appointment booking** and **queue management** process for public clinics — ensuring efficiency, transparency, and accessibility.
+
+This **Minimum Viable Product (MVP)** runs entirely in the browser using `localStorage` for data persistence and **JavaScript polling** to simulate real-time queue updates.
+
+>  **Note:**  
+> We couldn’t fully implement the backend due to our current academic level — we’re second-year IT students and have not yet covered APIs in class.  
+> However, we believe our submission demonstrates a clear **vision, logic, and technical structure** that can scale with backend integration in future versions.Please do not see this as an excuse but see it as a potential as we didn't let our limited skillset discourage us, thank you.
+
+---
+
+##  Technology Stack
+
+| Component | Technology | Description |
+|------------|-------------|-------------|
+| **Frontend Structure** | **HTML5** | Provides the core structure and layout of the application. |
+| **Styling** | **CSS3** | Ensures a responsive, user-friendly, and mobile-adaptive design. |
+| **Logic & Interactivity** | **Pure JavaScript (ES6)** | Manages booking logic, UI updates, and real-time data polling. |
+| **Data Storage** | **localStorage API** | Stores all appointments, queue data, and user settings persistently in the browser. |
+| **Real-time Simulation** | **JavaScript Polling + localStorage Sync** | Mimics live backend-driven updates by refreshing local data at fixed time intervals. |
+
+###  Offline-First Design
+Because it uses `localStorage` and client-side logic, **Smart Health System works fully offline**, mirroring how the real system will operate in clinics with poor or no connectivity.
+
+---
+
+##  Data Model (localStorage Structure)
+
+All clinic and patient information is stored locally in the browser’s `localStorage` as JSON strings.  
+The following schemas define the data model:
+
+### 1️ Appointment Object
+
+```json
 {
   "id": "APT-001",
   "patientName": "John Doe",
   "contact": "0712345678",
   "clinic": "VUT Clinic",
   "slot": "2025-10-28 09:30",
-  "status": "booked", 
+  "status": "booked",
   "standbyOptIn": true,
   "notified": false,
   "timestamp": "2025-10-27T10:15:00Z"
 }
 
-Queue Object
+
+2 Queue Object
 {
   "clinic": "VUT Clinic",
   "currentQueue": [
@@ -42,14 +59,18 @@ Queue Object
     { "id": "APT-002", "patientName": "Jane Smith", "status": "waiting" }
   ],
   "completed": [],
-  "lastUpdated": "2025-10-27T10:30:00Z"}
-Storage Keys Used
-Key	Purpose
-appointments	Stores all appointment objects.
-queueData	Tracks the current and completed queue per clinic.
-standbyList	Contains patients who opted into the standby/waitlist feature.
-notifications	Temporary cache for alert messages displayed to the user.
-________________________________________
+  "lastUpdated": "2025-10-27T10:30:00Z"
+}
+
+##  Storage Keys Used
+|------------|-------------|
+Key	| Purpose
+appointments |	Stores all appointment objects created by patients.
+queueData |	Maintains the current and completed queue per clinic.
+standbyList	| Holds standby patients who opted in for early slots.
+notifications	| Stores temporary messages for in-app alerts.
+
+
 Real-time Updates — Polling & Standby Mechanism
 Feature Summary
 To simulate real-time behavior, Smart Health System uses a JavaScript polling loop that checks localStorage at a fixed interval (every 10 seconds).
