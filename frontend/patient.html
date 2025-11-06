@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Health System | Patient Portal</title>
-    <link rel="stylesheet" href="../assets/css/patient.css">
+    <link rel="stylesheet" href="assets/css/patient.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -25,12 +25,62 @@
             
             <label>Phone Number</label>
             <input id="authPhone" type="tel" required placeholder="07XXXXXXXX" pattern="[0-9]{9,12}" />
+            
+            <label>Password</label>
+            <div class="password-input-container">
+                <input id="authPassword" type="password" required placeholder="Enter your password" minlength="8" />
+                <button type="button" id="togglePassword" class="password-toggle">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
 
             <button type="submit" id="authSubmitBtn">Login</button>
+            <div class="auth-links">
+                <a href="#" id="forgotPassword">Forgot your password?</a>
+            </div>
             <hr>
             <p id="toggleAuth">
                 New user? <a href="#" id="toggleRegister">Register here</a>
             </p>
+        </form>
+
+        <!-- Password Reset Form (hidden by default) -->
+        <form id="resetPasswordForm" class="auth-form hidden">
+            <h3>Reset Password</h3>
+            <p class="form-description">Enter your registered phone number. We'll send you a verification code.</p>
+            
+            <div id="resetStep1">
+                <label>Phone Number</label>
+                <input id="resetPhone" type="tel" required placeholder="07XXXXXXXX" pattern="[0-9]{9,12}" />
+                <button type="button" id="sendCodeBtn">Send Code</button>
+            </div>
+
+            <div id="resetStep2" class="hidden">
+                <label>Verification Code</label>
+                <input id="verificationCode" type="text" placeholder="Enter 6-digit code" pattern="[0-9]{6}" maxlength="6" />
+                
+                <label>New Password</label>
+                <div class="password-input-container">
+                    <input id="newPassword" type="password" required placeholder="Enter new password" minlength="8" />
+                    <button type="button" class="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <label>Confirm Password</label>
+                <div class="password-input-container">
+                    <input id="confirmPassword" type="password" required placeholder="Confirm new password" minlength="8" />
+                    <button type="button" class="password-toggle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <button type="submit" id="resetPasswordBtn">Reset Password</button>
+            </div>
+
+            <div class="auth-links">
+                <a href="#" id="backToLogin">← Back to Login</a>
+            </div>
         </form>
     </main>
 
@@ -130,6 +180,136 @@
         <p>&copy; 2025 SmartHealthSystem | Patient Portal</p>
     </footer>
 
-    <script src="../assets/js/patient.js"></script>
+    <script src="assets/js/patient.js"></script>
+    
+    <!-- Password reset and visibility handlers -->
+    <script>
+    // Password visibility toggle for all password inputs
+    document.querySelectorAll('.password-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const passwordInput = this.parentElement.querySelector('input[type="password"]');
+            const icon = this.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Password reset flow handlers
+    document.getElementById('forgotPassword').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('resetPasswordForm').classList.remove('hidden');
+    });
+
+    document.getElementById('backToLogin').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('resetPasswordForm').classList.add('hidden');
+        document.getElementById('loginForm').classList.remove('hidden');
+    });
+
+    document.getElementById('sendCodeBtn').addEventListener('click', async function() {
+        const phone = document.getElementById('resetPhone').value.trim();
+        if (!phone) {
+            alert('Please enter your phone number');
+            return;
+        }
+
+        try {
+            // Here you would call your backend API to send the verification code
+            // For demo, we'll simulate success:
+            this.textContent = 'Sending...';
+            this.disabled = true;
+            
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+            
+            document.getElementById('resetStep1').classList.add('hidden');
+            document.getElementById('resetStep2').classList.remove('hidden');
+            
+            alert('Verification code sent to your phone');
+        } catch (error) {
+            alert('Failed to send verification code. Please try again.');
+        } finally {
+            this.textContent = 'Send Code';
+            this.disabled = false;
+        }
+    });
+
+    document.getElementById('resetPasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const code = document.getElementById('verificationCode').value;
+        const newPass = document.getElementById('newPassword').value;
+        const confirmPass = document.getElementById('confirmPassword').value;
+
+        if (newPass !== confirmPass) {
+            alert('Passwords do not match');
+            return;
+        }
+
+        try {
+            // Here you would call your backend API to verify code and update password
+            // For demo, we'll simulate success:
+            document.getElementById('resetPasswordBtn').textContent = 'Processing...';
+            
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API call
+            
+            alert('Password reset successful! Please login with your new password.');
+            
+            // Reset forms and go back to login
+            this.reset();
+            document.getElementById('resetStep1').classList.remove('hidden');
+            document.getElementById('resetStep2').classList.add('hidden');
+            document.getElementById('resetPasswordForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        } catch (error) {
+            alert('Failed to reset password. Please try again.');
+        } finally {
+            document.getElementById('resetPasswordBtn').textContent = 'Reset Password';
+        }
+    });
+    </script>
+
+    <script>
+    document.getElementById('bookingForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  // Get form data
+  const appointmentData = {
+    patient_name: document.getElementById('patientName').value.trim(),
+    contact: document.getElementById('contact').value.trim(),
+    clinic: document.getElementById('clinic').value.trim(),
+    slot: document.getElementById('slot').value
+  };
+
+  try {
+    const response = await fetch('http://localhost:5000/api/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointmentData)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert('✅ Appointment booked successfully!');
+      document.getElementById('bookingForm').reset();
+    } else {
+      alert('❌ Error: ' + result.error);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    alert('⚠️ Could not connect to the booking service. Please try again.');
+  }
+});
+</script>
+
 </body>
 </html>
